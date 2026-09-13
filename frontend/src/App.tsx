@@ -1,51 +1,41 @@
-import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import RequireAuth from "./routes/RequireAuth";
+import AppLayout from "./layouts/AppLayout";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+import RequestsPage from "./pages/RequestsPage";
+import NewRequestPage from "./pages/NewRequestPage";
+import RequestDetailPage from "./pages/RequestDetailPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import ProfilePage from "./pages/ProfilePage";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AuditLogsPage from "./pages/AuditLogsPage";
 
-type HealthResponse = {
-  status: string;
-  service: string;
-  environment: string;
-};
-
-/**
- * Phase 1 placeholder.
- *
- * This is deliberately NOT a dashboard yet — that's Phase 9. Its only job
- * right now is to prove the frontend can reach the backend over HTTP
- * through the Vite dev proxy, which is the thing most likely to be
- * silently broken (wrong port, CORS misconfig, backend not running) and
- * therefore worth verifying before any real UI is built on top of it.
- */
 export default function App() {
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("/health")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Backend responded with ${res.status}`);
-        return res.json() as Promise<HealthResponse>;
-      })
-      .then(setHealth)
-      .catch((err: Error) => setError(err.message));
-  }, []);
-
   return (
-    <main style={{ fontFamily: "system-ui, sans-serif", padding: "2rem", maxWidth: 640 }}>
-      <h1>Business Workflow Automation Platform</h1>
-      <p>Phase 1 scaffold — architecture, backend skeleton, frontend skeleton.</p>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
-      <section style={{ marginTop: "1.5rem" }}>
-        <h2 style={{ fontSize: "1rem", textTransform: "none" }}>Backend connectivity</h2>
-        {error && <p style={{ color: "#b91c1c" }}>Could not reach backend: {error}</p>}
-        {!error && !health && <p>Checking backend…</p>}
-        {health && (
-          <ul>
-            <li>Status: {health.status}</li>
-            <li>Service: {health.service}</li>
-            <li>Environment: {health.environment}</li>
-          </ul>
-        )}
-      </section>
-    </main>
+      <Route element={<RequireAuth />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/requests" element={<RequestsPage />} />
+          <Route path="/requests/new" element={<NewRequestPage />} />
+          <Route path="/requests/:id" element={<RequestDetailPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+
+          <Route element={<RequireAuth allowedRoles={["admin"]} />}>
+            <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/audit" element={<AuditLogsPage />} />
+          </Route>
+        </Route>
+      </Route>
+
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }

@@ -1,0 +1,86 @@
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn_primary   { background: #2563eb; color: #fff; }
+.btn_primary:hover:not(:disabled)   { background: #1d4ed8; }
+.btn_secondary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+.btn_secondary:hover:not(:disabled) { background: #e5e7eb; }
+.btn_danger    { background: #dc2626; color: #fff; }
+.btn_danger:hover:not(:disabled)    { background: #b91c1c; }
+.btn_ghost     { background: transparent; color: #2563eb; }
+.btn_ghost:hover:not(:disabled)     { background: #eff6ff; }
+
+.btn_md { padding: 8px 16px; font-size: 0.875rem; }
+.btn_sm { padding: 4px 10px; font-size: 0.8rem; }
+
+/* ── Form fields ─────────────────────────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 4px; }
+.label { font-size: 0.875rem; font-weight: 500; color: #374151; }
+.input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.inputError   { border-color: #dc2626; }
+.fieldError   { font-size: 0.75rem; color: #dc2626; }
+
+/* ── Spinner ─────────────────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.centred {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* ── Empty / Error states ────────────────────────────────────────────── */
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  color: #6b7280;
+}
+.emptyTitle { font-size: 1rem; font-weight: 600; color: #374151; margin: 0 0 8px; }
+.emptyMsg   { font-size: 0.875rem; margin: 0 0 16px; }
+
+.errorBox {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+}

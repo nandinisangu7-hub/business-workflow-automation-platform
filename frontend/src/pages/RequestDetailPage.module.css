@@ -1,0 +1,38 @@
+.page { max-width: 1100px; }
+.back { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 0.875rem; padding: 0; margin-bottom: 16px; }
+.back:hover { text-decoration: underline; }
+.topRow { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.title { font-size: 1.4rem; font-weight: 700; color: #0f172a; margin: 0 0 8px; }
+.badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+.left { display: flex; flex-direction: column; gap: 20px; }
+.right { display: flex; flex-direction: column; gap: 20px; }
+.sectionTitle { font-size: 0.9rem; font-weight: 600; color: #374151; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.description { font-size: 0.9rem; color: #374151; line-height: 1.6; margin: 0; white-space: pre-wrap; }
+.actionGroup { display: flex; flex-direction: column; gap: 10px; }
+.assignRow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.approveRow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.select, .noteInput {
+  padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;
+  font-size: 0.875rem; flex: 1; min-width: 140px;
+}
+.details { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 0.875rem; margin: 0; }
+.details dt { color: #6b7280; font-weight: 500; }
+.details dd { color: #111827; margin: 0; }
+.comment { border-bottom: 1px solid #f3f4f6; padding-bottom: 12px; margin-bottom: 12px; }
+.comment:last-of-type { border-bottom: none; }
+.commentMeta { font-size: 0.75rem; color: #9ca3af; margin-bottom: 4px; }
+.commentBody { font-size: 0.875rem; color: #374151; margin: 0; white-space: pre-wrap; }
+.commentForm { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; border-top: 1px solid #f3f4f6; padding-top: 12px; }
+.noComments { font-size: 0.875rem; color: #9ca3af; margin: 0; }
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.timelineItem { display: flex; gap: 10px; position: relative; padding-bottom: 16px; }
+.timelineItem:last-child { padding-bottom: 0; }
+.timelineDot { width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; margin-top: 4px; }
+.timelineLine { position: absolute; left: 4px; top: 14px; bottom: 0; width: 2px; background: #e5e7eb; }
+.timelineContent { display: flex; flex-direction: column; gap: 2px; }
+.timelineStatus { font-size: 0.8rem; font-weight: 600; color: #374151; text-transform: capitalize; }
+.timelineNote { font-size: 0.8rem; color: #6b7280; }
+.timelineDate { font-size: 0.75rem; color: #9ca3af; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }

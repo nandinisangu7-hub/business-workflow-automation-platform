@@ -1,0 +1,24 @@
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Status colours */
+.status_pending    { background: #fef3c7; color: #92400e; }
+.status_assigned   { background: #dbeafe; color: #1e40af; }
+.status_in_progress{ background: #ede9fe; color: #5b21b6; }
+.status_approved   { background: #d1fae5; color: #065f46; }
+.status_rejected   { background: #fee2e2; color: #991b1b; }
+.status_completed  { background: #d1fae5; color: #065f46; }
+.status_cancelled  { background: #f3f4f6; color: #6b7280; }
+
+/* Priority colours */
+.priority_low    { background: #f3f4f6; color: #374151; }
+.priority_medium { background: #fef3c7; color: #92400e; }
+.priority_high   { background: #fed7aa; color: #9a3412; }
+.priority_urgent { background: #fee2e2; color: #991b1b; }

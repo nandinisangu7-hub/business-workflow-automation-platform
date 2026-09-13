@@ -1,0 +1,10 @@
+.title { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0 0 20px; }
+.tableWrap { overflow-x: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.table th { padding: 10px 14px; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+.table td { padding: 11px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.action { text-transform: capitalize; font-weight: 500; color: #1e40af; }
+.entity { color: #6b7280; }
+.id { font-family: monospace; font-size: 0.8rem; color: #9ca3af; }
+.date { color: #9ca3af; white-space: nowrap; font-size: 0.8rem; }
