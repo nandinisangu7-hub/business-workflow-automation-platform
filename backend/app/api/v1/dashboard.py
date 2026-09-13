@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.api.v1.dependencies import get_current_user
@@ -25,12 +25,12 @@ class DashboardSummary(BaseModel):
 
 @router.get("/summary", response_model=DashboardSummary)
 def summary(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    base = select(WorkflowRequest)
+    stmt = select(WorkflowRequest.status, func.count().label("n")).group_by(WorkflowRequest.status)
+
     if user.role == UserRole.EMPLOYEE:
-        base = base.where(WorkflowRequest.requester_id == user.id)
+        stmt = stmt.where(WorkflowRequest.requester_id == user.id)
     elif user.role == UserRole.MANAGER:
-        from sqlalchemy import or_
-        base = base.where(
+        stmt = stmt.where(
             or_(
                 WorkflowRequest.requester_id == user.id,
                 WorkflowRequest.assignee_id == user.id,
@@ -40,12 +40,7 @@ def summary(db: Session = Depends(get_db), user: User = Depends(get_current_user
     # ADMIN sees all — no filter
 
     counts: dict[str, int] = {s.value: 0 for s in RequestStatus}
-    rows = db.execute(
-        select(WorkflowRequest.status, func.count().label("n"))
-        .select_from(base.subquery())
-        .group_by(WorkflowRequest.status)
-    ).all()
-    for status, n in rows:
+    for status, n in db.execute(stmt).all():
         counts[status.value] = n
 
     return DashboardSummary(
