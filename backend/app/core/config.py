@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     DEFAULT_PAGE_SIZE: int = 20
     MAX_PAGE_SIZE: int = 100
 
+    # --- External API integration (Phase 8) ---
+    # Set to False in tests/offline environments to skip real HTTP calls.
+    HOLIDAY_API_ENABLED: bool = True
+    # ISO 3166-1 alpha-2 country code for public holiday checks.
+    HOLIDAY_COUNTRY_CODE: str = "US"
+
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
