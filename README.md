@@ -166,7 +166,7 @@ npm run test
 - [x] **Phase 1** — Architecture, repository structure, backend/frontend skeleton that boots and is tested
 - [x] **Phase 2** — Database models and Alembic migrations
 - [x] **Phase 3** — Authentication and authorization (bcrypt password hashing, expiring JWTs, register/login/me APIs, RBAC guard, and safe seed script). See `docs/AUTHENTICATION.md`.
-- [ ] Phase 4 — Request management APIs
+- [x] **Phase 4** — Request management APIs (authorized CRUD, categories, comments, cancellation, and manager team visibility). See `docs/REQUESTS.md`.
 - [ ] Phase 5 — Workflow engine
 - [ ] Phase 6 — Audit logging
 - [ ] Phase 7 — Notifications
