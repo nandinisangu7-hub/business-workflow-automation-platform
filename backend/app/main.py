@@ -18,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1.auth import router as auth_router
 from app.api.v1.requests import router as requests_router
+from app.api.v1.workflow import router as workflow_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -55,6 +56,7 @@ app.add_middleware(
 )
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
 app.include_router(requests_router, prefix=settings.API_V1_PREFIX)
+app.include_router(workflow_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/health", tags=["system"], summary="Liveness check")
