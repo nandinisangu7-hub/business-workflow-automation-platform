@@ -3,10 +3,7 @@
 An enterprise-style workflow automation platform built to demonstrate
 full-stack application engineering practices.
 
-> **Status: Phase 2 of 14 complete.** This README is intentionally partial
-> right now — it will be filled out section by section as each phase lands,
-> and rewritten properly in Phase 14. See [Development Phases](#development-phases)
-> below for what exists today versus what's planned.
+> **Status: Phase 10 of 14 complete.** See [Development Phases](#development-phases) below.
 
 ## Overview
 
@@ -83,15 +80,15 @@ business-workflow-automation-platform/
 │   ├── alembic/                        # migrations (Phase 2)
 │   ├── tests/{unit,integration}/
 │   ├── requirements.txt
-│   └── Dockerfile                      # (Phase 12)
+│   └── Dockerfile                      # (Phase 10)
 ├── frontend/
 │   ├── src/{components,pages,layouts,api,hooks,types,utils,context,routes}/
 │   ├── tests/
 │   ├── package.json
-│   └── Dockerfile                      # (Phase 12)
-├── docs/                                # API.md, ARCHITECTURE.md, DATABASE.md, WORKFLOW.md (Phase 14)
-├── .github/workflows/                   # CI (Phase 13)
-├── docker-compose.yml                   # (Phase 12)
+│   └── Dockerfile                      # (Phase 10)
+├── docs/                                # API.md, ARCHITECTURE.md, DATABASE.md, WORKFLOW.md (Phase 13)
+├── .github/workflows/                   # CI (Phase 12)
+├── docker-compose.yml                   # (Phase 10)
 └── .env.example
 ```
 
@@ -119,12 +116,55 @@ users ──< audit_logs   (entity_id is a plain string, not an FK — see
 Full ER diagram and column-level rationale will move to `docs/DATABASE.md`
 in Phase 14.
 
+## Running with Docker Compose
+
+The fastest way to run the full stack (PostgreSQL + backend + frontend) locally.
+
+**Prerequisites:** Docker Desktop installed and running.
+
+**Ports:**
+| Service | Port | URL |
+|---|---|---|
+| Frontend (nginx) | 80 | http://localhost |
+| Backend (FastAPI) | 8000 | http://localhost:8000/docs |
+| PostgreSQL | 5432 | localhost:5432 |
+
+**Setup:**
+```bash
+# 1. Copy and configure environment variables
+cp .env.example .env
+# Edit .env — at minimum set a real SECRET_KEY:
+# python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+# 2. Build images
+docker compose build
+
+# 3. Start all services (detached)
+docker compose up -d
+
+# 4. Check service health
+docker compose ps
+
+# 5. View backend logs (migrations run automatically on startup)
+docker compose logs backend
+```
+
+**Stopping:**
+```bash
+docker compose down          # stop containers, keep DB volume
+docker compose down -v       # stop containers AND delete DB volume
+```
+
+**Running backend tests inside Docker:**
+```bash
+docker compose exec backend python -m pytest tests/ -q
+```
+
 ## Running Locally
 
 **Database migrations** (run once, after setting `DATABASE_URL` in your
-`.env` — see `.env.example`; requires a running Postgres, which arrives in
-Phase 12's Docker Compose — until then, migrations can also be verified
-against a local SQLite file for development, as shown in Phase 2's tests):
+`.env` — see `.env.example`; requires a running Postgres — use Docker
+Compose above for the easiest setup):
 ```bash
 cd backend
 PYTHONPATH=. alembic upgrade head
@@ -165,18 +205,17 @@ npm run test
 
 - [x] **Phase 1** — Architecture, repository structure, backend/frontend skeleton that boots and is tested
 - [x] **Phase 2** — Database models and Alembic migrations
-- [x] **Phase 3** — Authentication and authorization (bcrypt password hashing, expiring JWTs, register/login/me APIs, RBAC guard, and safe seed script). See `docs/AUTHENTICATION.md`.
-- [x] **Phase 4** — Request management APIs (authorized CRUD, categories, comments, cancellation, and manager team visibility). See `docs/REQUESTS.md`.
-- [x] **Phase 5** — Workflow engine (validated transitions, assignment rules, RBAC, and append-only status history). See `docs/WORKFLOW.md`.
-- [ ] Phase 6 — Audit logging
-- [ ] Phase 7 — Notifications
-- [ ] Phase 8 — External API integration
-- [ ] Phase 9 — React frontend (pages, components)
-- [ ] Phase 10 — Search / filter / pagination
+- [x] **Phase 3** — Authentication and authorization (bcrypt password hashing, expiring JWTs, register/login/me APIs, RBAC guard, safe seed script). See `docs/AUTHENTICATION.md`.
+- [x] **Phase 4** — Request management APIs (authorized CRUD, categories, comments, cancellation, manager team visibility). See `docs/REQUESTS.md`.
+- [x] **Phase 5** — Workflow engine (validated transitions, assignment rules, RBAC, append-only status history). See `docs/WORKFLOW.md`.
+- [x] **Phase 6** — Audit logging (append-only audit log, admin query API, entity/action filtering)
+- [x] **Phase 7** — Notifications (in-app notifications on request create/assign/status change, unread count, mark read)
+- [x] **Phase 8** — External API integration (Nager.Date public holiday check on due dates, mock path for tests)
+- [x] **Phase 9** — React frontend (full SPA: auth, dashboard, requests, workflow, notifications, admin, audit log pages)
+- [x] **Phase 10** — Docker Compose deployment (PostgreSQL + FastAPI + React/nginx, health checks, auto-migrations on startup)
 - [ ] Phase 11 — Testing (deepening coverage across phases 2–9)
-- [ ] Phase 12 — Docker
-- [ ] Phase 13 — GitHub Actions CI
-- [ ] Phase 14 — Documentation and final README
+- [ ] Phase 12 — GitHub Actions CI
+- [ ] Phase 13 — Documentation and final README
 
 ## Future Improvements
 
