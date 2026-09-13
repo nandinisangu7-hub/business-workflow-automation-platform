@@ -44,8 +44,9 @@ def test_admin_can_list_audit_logs():
 
         resp = client.get("/api/v1/audit-logs", headers=_headers(client, "admin@a.com"))
         assert resp.status_code == 200
-        assert isinstance(resp.json(), list)
-        assert any(entry["action"] == "test_action" for entry in resp.json())
+        body = resp.json()
+        assert "items" in body
+        assert any(entry["action"] == "test_action" for entry in body["items"])
     finally:
         db.close(); app.dependency_overrides.clear(); engine.dispose()
 
@@ -76,10 +77,10 @@ def test_audit_logs_filter_by_entity_type():
         h = _headers(client, "admin2@a.com")
         resp = client.get("/api/v1/audit-logs?entity_type=request", headers=h)
         assert resp.status_code == 200
-        assert all(entry["entity_type"] == "request" for entry in resp.json())
+        assert all(entry["entity_type"] == "request" for entry in resp.json()["items"])
 
         resp2 = client.get("/api/v1/audit-logs?entity_type=user", headers=h)
-        assert all(entry["entity_type"] == "user" for entry in resp2.json())
+        assert all(entry["entity_type"] == "user" for entry in resp2.json()["items"])
     finally:
         db.close(); app.dependency_overrides.clear(); engine.dispose()
 
@@ -97,6 +98,6 @@ def test_audit_logs_filter_by_entity_id():
 
         resp = client.get("/api/v1/audit-logs?entity_id=target-id", headers=_headers(client, "admin3@a.com"))
         assert resp.status_code == 200
-        assert all(entry["entity_id"] == "target-id" for entry in resp.json())
+        assert all(entry["entity_id"] == "target-id" for entry in resp.json()["items"])
     finally:
         db.close(); app.dependency_overrides.clear(); engine.dispose()

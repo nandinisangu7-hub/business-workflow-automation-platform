@@ -64,7 +64,7 @@ export default function RequestDetailPage() {
       .finally(() => setLoading(false));
 
     if (isManagerOrAdmin) {
-      usersApi.list().then(r => setUsers(r.data)).catch(() => {});
+      usersApi.list().then(r => setUsers(r.data.items)).catch(() => {});
     }
   }, [id, isManagerOrAdmin]);
 

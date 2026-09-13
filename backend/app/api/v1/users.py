@@ -1,7 +1,7 @@
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.api.v1.dependencies import get_current_user, require_roles
@@ -20,12 +20,34 @@ class UserUpdate(BaseModel):
     role: UserRole | None = None
 
 
-@router.get("", response_model=list[UserRead])
+class PaginatedUsers(BaseModel):
+    items: list[UserRead]
+    page: int
+    page_size: int
+    total: int
+    total_pages: int
+
+
+@router.get("", response_model=PaginatedUsers)
 def list_users(
+    search: str | None = Query(default=None, max_length=200),
+    role: UserRole | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=200),
     db: Session = Depends(get_db),
     _: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
 ):
-    return list(db.scalars(select(User).order_by(User.full_name)))
+    from sqlalchemy import func
+    stmt = select(User).order_by(User.full_name)
+    if search:
+        term = f"%{search}%"
+        stmt = stmt.where(or_(User.full_name.ilike(term), User.email.ilike(term)))
+    if role:
+        stmt = stmt.where(User.role == role)
+    total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    total_pages = max(1, (total + page_size - 1) // page_size)
+    items = list(db.scalars(stmt.offset((page - 1) * page_size).limit(page_size)))
+    return PaginatedUsers(items=items, page=page, page_size=page_size, total=total, total_pages=total_pages)
 
 
 @router.get("/me", response_model=UserRead)

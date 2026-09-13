@@ -1,5 +1,5 @@
 import api from "./client";
-import type { Notification, AuditLog, DashboardSummary, User } from "../types";
+import type { Notification, AuditLog, DashboardSummary, User, PaginatedResponse } from "../types";
 
 export const notificationsApi = {
   list: () => api.get<Notification[]>("/notifications"),
@@ -13,12 +13,13 @@ export const dashboardApi = {
 };
 
 export const auditApi = {
-  list: (entity_type?: string, entity_id?: string) =>
-    api.get<AuditLog[]>("/audit-logs", { params: { entity_type, entity_id } }),
+  list: (params: { entity_type?: string; entity_id?: string; page?: number; page_size?: number } = {}) =>
+    api.get<PaginatedResponse<AuditLog>>("/audit-logs", { params }),
 };
 
 export const usersApi = {
-  list: () => api.get<User[]>("/users"),
+  list: (params: { search?: string; role?: string; page?: number; page_size?: number } = {}) =>
+    api.get<PaginatedResponse<User>>("/users", { params }),
   get: (id: string) => api.get<User>(`/users/${id}`),
   update: (id: string, data: Partial<{ full_name: string; is_active: boolean; role: string }>) =>
     api.patch<User>(`/users/${id}`, data),

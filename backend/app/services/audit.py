@@ -18,10 +18,20 @@ class AuditService:
         self.db.add(entry)
         return entry
 
-    def list(self, *, entity_type: str | None = None, entity_id: str | None = None) -> list[AuditLog]:
+    def list(
+        self,
+        *,
+        entity_type: str | None = None,
+        entity_id: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> tuple[list[AuditLog], int]:
+        from sqlalchemy import func
         statement = select(AuditLog).order_by(AuditLog.created_at.desc())
         if entity_type:
             statement = statement.where(AuditLog.entity_type == entity_type)
         if entity_id:
             statement = statement.where(AuditLog.entity_id == entity_id)
-        return list(self.db.scalars(statement))
+        total = self.db.scalar(select(func.count()).select_from(statement.subquery())) or 0
+        items = list(self.db.scalars(statement.offset(offset).limit(limit)))
+        return items, total

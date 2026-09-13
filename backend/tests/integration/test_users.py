@@ -45,7 +45,7 @@ def test_admin_can_list_all_users():
 
         resp = client.get("/api/v1/users", headers=_headers(client, "admin@u.com"))
         assert resp.status_code == 200
-        emails = [u["email"] for u in resp.json()]
+        emails = [u["email"] for u in resp.json()["items"]]
         assert "admin@u.com" in emails
         assert "emp@u.com" in emails
     finally:

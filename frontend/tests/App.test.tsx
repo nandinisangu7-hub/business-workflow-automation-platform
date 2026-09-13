@@ -1,29 +1,33 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it } from "vitest";
+import { MemoryRouter } from "react-router-dom";
+import { AuthProvider } from "../src/context/AuthContext";
 import App from "../src/App";
 
-describe("App (Phase 1 scaffold)", () => {
-  beforeEach(() => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          status: "ok",
-          service: "Business Workflow Automation Platform",
-          environment: "test",
-        }),
-      })
-    );
+function renderApp(initialPath = "/") {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </MemoryRouter>
+  );
+}
+
+describe("App routing", () => {
+  it("redirects unauthenticated users to /login", () => {
+    renderApp("/dashboard");
+    expect(screen.getByRole("heading", { name: /sign in/i })).toBeInTheDocument();
   });
 
-  it("renders the page title", () => {
-    render(<App />);
+  it("renders the login page at /login", () => {
+    renderApp("/login");
+    expect(screen.getByRole("heading", { name: /sign in/i })).toBeInTheDocument();
     expect(screen.getByText("Business Workflow Automation Platform")).toBeInTheDocument();
   });
 
-  it("displays backend health once the fetch resolves", async () => {
-    render(<App />);
-    expect(await screen.findByText(/Status: ok/)).toBeInTheDocument();
+  it("renders the register link on the login page", () => {
+    renderApp("/login");
+    expect(screen.getByRole("link", { name: /register/i })).toBeInTheDocument();
   });
 });
