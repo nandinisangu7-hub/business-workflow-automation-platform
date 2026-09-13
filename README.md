@@ -165,7 +165,7 @@ npm run test
 
 - [x] **Phase 1** — Architecture, repository structure, backend/frontend skeleton that boots and is tested
 - [x] **Phase 2** — Database models and Alembic migrations
-- [ ] Phase 3 — Authentication and authorization (+ seed data, deferred from Phase 2 since it needs password hashing)
+- [x] **Phase 3** — Authentication and authorization (bcrypt password hashing, expiring JWTs, register/login/me APIs, RBAC guard, and safe seed script). See `docs/AUTHENTICATION.md`.
 - [ ] Phase 4 — Request management APIs
 - [ ] Phase 5 — Workflow engine
 - [ ] Phase 6 — Audit logging
