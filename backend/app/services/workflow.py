@@ -11,6 +11,7 @@ from app.models.request import WorkflowRequest
 from app.models.status_history import RequestStatusHistory
 from app.models.user import User
 from app.services.audit import AuditService
+from app.services.notifications import NotificationService
 
 
 class WorkflowService:
@@ -42,6 +43,7 @@ class WorkflowService:
         request.status = RequestStatus.ASSIGNED
         self.db.add(RequestAssignment(request_id=request.id, assignee_id=assignee.id, assigned_by_id=actor.id))
         AuditService(self.db).record(actor_id=actor.id, action="request_assigned", entity_type="request", entity_id=request.id, previous={"assignee_id": str(old_assignee_id) if old_assignee_id else None}, new={"assignee_id": str(assignee.id)})
+        NotificationService(self.db).on_request_assigned(request)
         if old_status != RequestStatus.ASSIGNED:
             self._record_status(request, old_status, RequestStatus.ASSIGNED, actor.id, "Request assigned")
         self.db.commit()
@@ -66,6 +68,7 @@ class WorkflowService:
             request.completed_at = datetime.now(timezone.utc)
         self._record_status(request, old_status, target, actor.id, note)
         AuditService(self.db).record(actor_id=actor.id, action="request_status_changed", entity_type="request", entity_id=request.id, previous={"status": old_status.value}, new={"status": target.value})
+        NotificationService(self.db).on_status_changed(request, target.value)
         self.db.commit()
         self.db.refresh(request)
         return request

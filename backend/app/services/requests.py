@@ -8,6 +8,7 @@ from app.models.enums import RequestStatus, UserRole
 from app.models.request import WorkflowRequest
 from app.models.user import User
 from app.services.audit import AuditService
+from app.services.notifications import NotificationService
 from app.schemas.requests import CommentCreate, RequestCreate, RequestUpdate
 
 class RequestService:
@@ -30,6 +31,7 @@ class RequestService:
         self.db.add(request)
         self.db.flush()
         AuditService(self.db).record(actor_id=user.id, action="request_created", entity_type="request", entity_id=request.id, new={"status": request.status.value})
+        NotificationService(self.db).on_request_created(request)
         self.db.commit()
         self.db.refresh(request)
         return request
