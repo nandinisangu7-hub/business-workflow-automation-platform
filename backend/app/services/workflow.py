@@ -10,6 +10,7 @@ from app.models.enums import RequestStatus, UserRole
 from app.models.request import WorkflowRequest
 from app.models.status_history import RequestStatusHistory
 from app.models.user import User
+from app.services.audit import AuditService
 
 
 class WorkflowService:
@@ -36,9 +37,11 @@ class WorkflowService:
         if not assignee or not assignee.is_active:
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Assignee is unavailable")
         old_status = request.status
+        old_assignee_id = request.assignee_id
         request.assignee_id = assignee.id
         request.status = RequestStatus.ASSIGNED
         self.db.add(RequestAssignment(request_id=request.id, assignee_id=assignee.id, assigned_by_id=actor.id))
+        AuditService(self.db).record(actor_id=actor.id, action="request_assigned", entity_type="request", entity_id=request.id, previous={"assignee_id": str(old_assignee_id) if old_assignee_id else None}, new={"assignee_id": str(assignee.id)})
         if old_status != RequestStatus.ASSIGNED:
             self._record_status(request, old_status, RequestStatus.ASSIGNED, actor.id, "Request assigned")
         self.db.commit()
@@ -62,6 +65,7 @@ class WorkflowService:
         if target == RequestStatus.COMPLETED:
             request.completed_at = datetime.now(timezone.utc)
         self._record_status(request, old_status, target, actor.id, note)
+        AuditService(self.db).record(actor_id=actor.id, action="request_status_changed", entity_type="request", entity_id=request.id, previous={"status": old_status.value}, new={"status": target.value})
         self.db.commit()
         self.db.refresh(request)
         return request

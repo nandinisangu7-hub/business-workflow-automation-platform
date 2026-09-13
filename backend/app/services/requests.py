@@ -7,6 +7,7 @@ from app.models.comment import RequestComment
 from app.models.enums import RequestStatus, UserRole
 from app.models.request import WorkflowRequest
 from app.models.user import User
+from app.services.audit import AuditService
 from app.schemas.requests import CommentCreate, RequestCreate, RequestUpdate
 
 class RequestService:
@@ -26,7 +27,12 @@ class RequestService:
             category = self.db.get(RequestCategory, payload.category_id)
             if not category or not category.is_active: raise HTTPException(422, "Category is unavailable")
         request = WorkflowRequest(**payload.model_dump(), requester_id=user.id)
-        self.db.add(request); self.db.commit(); self.db.refresh(request); return request
+        self.db.add(request)
+        self.db.flush()
+        AuditService(self.db).record(actor_id=user.id, action="request_created", entity_type="request", entity_id=request.id, new={"status": request.status.value})
+        self.db.commit()
+        self.db.refresh(request)
+        return request
     def update(self, request: WorkflowRequest, payload: RequestUpdate, user: User) -> WorkflowRequest:
         if request.requester_id != user.id or request.status != RequestStatus.PENDING:
             raise HTTPException(403, "Only the requester may edit a pending request")
@@ -37,6 +43,7 @@ class RequestService:
                 raise HTTPException(422, "Category is unavailable")
         for key, value in changes.items():
             setattr(request, key, value)
+        AuditService(self.db).record(actor_id=user.id, action="request_updated", entity_type="request", entity_id=request.id, details={"fields": sorted(changes)})
         self.db.commit()
         self.db.refresh(request)
         return request
@@ -44,6 +51,7 @@ class RequestService:
         if request.requester_id != user.id or request.status != RequestStatus.PENDING:
             raise HTTPException(409, "Only a pending request can be cancelled by its requester")
         request.status = RequestStatus.CANCELLED
+        AuditService(self.db).record(actor_id=user.id, action="request_cancelled", entity_type="request", entity_id=request.id, previous={"status": RequestStatus.PENDING.value}, new={"status": RequestStatus.CANCELLED.value})
         self.db.commit()
         self.db.refresh(request)
         return request
@@ -61,6 +69,8 @@ class RequestService:
             raise HTTPException(422, "Comment cannot be blank")
         comment = RequestComment(request_id=request.id, author_id=user.id, body=body)
         self.db.add(comment)
+        self.db.flush()
+        AuditService(self.db).record(actor_id=user.id, action="comment_created", entity_type="request_comment", entity_id=comment.id, details={"request_id": str(request.id)})
         self.db.commit()
         self.db.refresh(comment)
         return comment
