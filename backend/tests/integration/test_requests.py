@@ -26,7 +26,7 @@ def test_employee_can_create_comment_on_and_cancel_own_pending_request():
         created = client.post("/api/v1/requests", headers=headers, json={"title": "Laptop replacement", "description": "The battery no longer holds charge."})
         assert created.status_code == 201
         request_id = created.json()["id"]
-        assert client.get("/api/v1/requests", headers=headers).json()[0]["id"] == request_id
+        assert client.get("/api/v1/requests", headers=headers).json()["items"][0]["id"] == request_id
         assert client.post(f"/api/v1/requests/{request_id}/comments", headers=headers, json={"body": "Asset tag: A-123"}).status_code == 201
         cancelled = client.post(f"/api/v1/requests/{request_id}/cancel", headers=headers)
         assert cancelled.status_code == 200 and cancelled.json()["status"] == "cancelled"

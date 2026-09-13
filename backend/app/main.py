@@ -22,6 +22,8 @@ from app.api.v1.workflow import router as workflow_router
 from app.api.v1.audit import router as audit_router
 from app.api.v1.notifications import router as notifications_router
 from app.api.v1.integrations import router as integrations_router
+from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.users import router as users_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -63,6 +65,8 @@ app.include_router(workflow_router, prefix=settings.API_V1_PREFIX)
 app.include_router(audit_router, prefix=settings.API_V1_PREFIX)
 app.include_router(notifications_router, prefix=settings.API_V1_PREFIX)
 app.include_router(integrations_router, prefix=settings.API_V1_PREFIX)
+app.include_router(dashboard_router, prefix=settings.API_V1_PREFIX)
+app.include_router(users_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/health", tags=["system"], summary="Liveness check")
